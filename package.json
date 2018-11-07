@@ -1,0 +1,16 @@
+{
+  "name": "medicationdb",
+  "version": "1.0.0",
+  "description": "A simple medication management database with HAPI and ES6.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "pm2-dev start server.json"
+  },
+  "repository": "git@bitbucket.org:vighd/medicationdb.git",
+  "author": "Daniel Vigh <vighd@digital.co.hu>",
+  "license": "MIT",
+  "dependencies": {
+    "hapi": "^17.7.0",
+    "inert": "^5.1.2"
+  }
+}

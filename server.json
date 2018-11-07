@@ -1,0 +1,13 @@
+{
+  "apps" : [
+    {
+      "name":   "medicationdb-server",
+      "script": "src/index.js",
+      "instances": "1",
+      "out_file": "~/.pm2/logs/meddb-server.log",
+      "error_file": "~/.pm2/logs/meddb-server.log",
+      "merge_logs"      : true,
+      "log_date_format" : "YYYY-MM-DD HH:mm Z"
+    }
+  ]
+}
