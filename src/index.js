@@ -1,7 +1,7 @@
 'use strict'
 
 const Hapi = require('hapi')
-//const db = require('./database.js')
+const db = require('./database.js')
 const server = Hapi.server(
   {
     host: process.env.HOST || 'localhost',
@@ -17,9 +17,9 @@ async function start() {
         plugin: require('inert')
       }
     ])
-    /* INIT SQLITE */
+    /* INIT DATABASE */
 
-    //await db.init('database.sqlite')
+    await db.init('database.sqlite')
 
     /* Register routes */
 

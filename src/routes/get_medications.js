@@ -1,10 +1,12 @@
+const db = require('../database.js')
+
 module.exports = {
   method: 'GET',
-  path: '/api/test',
+  path: '/api/medications',
   config: {
-    handler: async function(request,h) {
+    handler: function(request,h) {
       try {
-        return "Hello from the api server" 
+        return db.runQuery(`SELECT * FROM medications`) 
       } catch (e) {
         console.error(e)
         return h.response({ error: e.message }).code(400)

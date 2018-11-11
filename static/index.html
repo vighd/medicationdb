@@ -1,1 +1,61 @@
-Ez egy gyógyszeradatbázis vazze!
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Medication database</title>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="container">
+      <div id="header">
+        <div id="finder">
+          <label id="medication-finder-label" for="medication-finder"><i class="fas fa-search"></i></label>
+          <input type="text" class="form-field" id="medication-finder" name="medication-finder" placeholder="Find medication"></input>
+        </div>
+        <div id="title">
+          <h1>Medication database</h1>
+        </div>
+        <button class="navigation-button" id="add-medication"><i class="fas fa-plus"></i></button>
+      </div>
+      <div id="content">
+        <form id="add-medication-form">
+          <label for="name">Name of medication:</label>
+          <input id="name" class="form-field" name="name" type="text" placeholder="Algopyrin" />
+          <label for="substance">Substance:</label>
+          <input id="substance" class="form-field" name="substance" type="text" placeholder="metamizole sodium" />
+          <label for="amount">Amount:</label>
+          <input id="amount" class="form-field" name="amount" type="text" placeholder="10" />
+          <label for="info">Info:</label>
+          <textarea id="info" class="form-field" name="info" placeholder="some sort info from the medication"></textarea>
+          <label for="exp-date">Expiration date:</label>
+          <input id="exp-date" class="form-field" name="exp-date" type="date" />
+          <label for="dosage">Dosage:</label>
+          <input id="dosage" class="form-field" name="dosage" type="text" placeholder="3x1" />
+          <label for="do-not-use">Do not use:</label>
+          <textarea id="do-not-use" class="form-field" name="do-not-use" placeholder="some sort info when not use the medication"></textarea>
+          <button class="form-field" id="post-medication">OK</button>
+          <button class="form-field" id="update-medication">Save</button>
+        </form>
+        <div id="medication-grid-header">
+          <div class="medication-grid-header-item">Name</div>
+          <div class="medication-grid-header-item">Substance</div>
+          <div class="medication-grid-header-item">Amount</div>
+          <div class="medication-grid-header-item">Info</div>
+          <div class="medication-grid-header-item">Expiration date</div>
+          <div class="medication-grid-header-item">Dosage</div>
+          <div class="medication-grid-header-item">Do not use</div>
+          <div class="medication-grid-header-item">Actions</div>
+        </div>
+        <div id="medication-grid">
+        </div>
+      </div>
+      <div id="footer">
+        <div id="footer-content">
+          <p>Medication database for personal use. Created by: Daniel Vigh</p>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="index.js"></script>
+  </body>
+</html>

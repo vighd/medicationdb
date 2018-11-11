@@ -1,0 +1,128 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: 'Roboto', sans-serif;
+}
+
+#header {
+  height: 40px;
+  background-color: #028CD0;
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navigation-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2em;
+  margin: 5px;
+}
+
+#add-medication {
+  margin-right: 10px;
+}
+
+#finder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#medication-finder-label {
+  color: white;
+  font-size: 1.7em;
+  margin: 5px 10px 5px 5px;
+}
+
+.form-field {
+  height: 24px;
+  padding-left: 5px;
+  outline: none;
+  border: 1px solid #aaaaaa;
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+
+textarea {
+  height: 100px !important;
+}
+
+#title {
+  color: white;
+}
+
+#add-medication-form {
+  width: 500px;
+  height: calc(100vh - 80px);
+  background: white;
+  z-index: 999;
+  position: absolute;
+  right: 0;
+  box-shadow: 0px 0px 10px rgba(0,0,0,.1);
+  display: none;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
+#add-medication-form .form-field {
+  margin: 15px;
+}
+
+#add-medication-form label {
+  margin-left: 15px;
+}
+
+#content {
+  height: calc(100vh - 60px);
+  width: 100%;
+  overflow: overlay;
+}
+
+#footer {
+  height: 20px;
+  background-color: #028CD0;
+  color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#footer-content {
+  margin: auto;
+}
+
+#medication-grid {
+  display: grid;
+  text-align: center;
+  grid-template-columns: repeat(8, 1fr);
+  margin: 5px 0px 5px 0px;
+}
+
+#medication-grid-header {
+  display: grid;
+  position: sticky;
+  top: 0;
+  text-align: center;
+  grid-template-columns: repeat(8, 1fr);
+  padding: 5px 0px 5px 0px;
+  background: #F8F8F8;
+}
+
+.medication-grid-item, .medication-header-item {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 5px 0px 5px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.medication-grid-item.actions i {
+  margin-left: 5px;
+}
