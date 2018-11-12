@@ -1,5 +1,6 @@
 const app = {
   medicationCount: 0,
+  timer: null,
   elements: {
     medicationGrid: document.querySelector('#medication-grid'),
     medicationFinder: document.querySelector('#medication-finder'),
@@ -11,6 +12,10 @@ const app = {
   getMedicationCount: () => this.medicationCount || 0,
   setMedicationCount: (count) => {
     this.medicationCount = count
+  },
+  getTimer: () => this.timer || 0,
+  setTimer: (timer) => {
+    this.timer = timer
   }
 }
 
@@ -96,6 +101,12 @@ function getMedications() {
   return getData(`/api/medications`)
 }
 
+async function reloadMedicationsGrid() {
+  removeElements(document.querySelectorAll('.medication-grid-item'))
+  let medications = await getMedications()
+  fillMedicationsGrid(medications, app.elements.medicationGrid)
+}
+
 function removeMedication(id) {
   const data = {
     "id": id
@@ -106,9 +117,7 @@ function removeMedication(id) {
       if (result.error) {
         throw Error(result.error)
       } else {
-        removeElements(document.querySelectorAll('.medication-grid-item'))
-        let medications = await getMedications()
-        fillMedicationsGrid(medications, app.elements.medicationGrid)
+        reloadMedicationsGrid()
       }
     } catch (e) {
       console.error(e.message)
@@ -166,6 +175,12 @@ function appendMultipleChild(el, childs) {
   childs.forEach(e => el.appendChild(e))
 }
 
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this)
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset())
+    return local.toJSON().slice(0,10)
+})
+
 /**
  * removeElements
  * Remove the matching class elements from the DOM.
@@ -194,7 +209,7 @@ function fillMedicationsGrid(medications, element) {
         if (daysBetween(new Date(), new Date(v[x])) < 14) {
           div.appendChild(createElement('p', { innerHTML: `${v[x]}`, style: `color: red;` }))
         } else {
-          div.appendChild(document.createTextNode(`${v[x]}`))
+          div.appendChild(createElement('p', { innerHTML: `${v[x]}`, title: `${v[x]}`,  style: `text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 20ch;` }))
         }
       } else if ( x === "amount") {
         const dailyAmount = Number(v.dosage.split('x')[0])*Number(v.dosage.split('x')[1])
@@ -202,10 +217,10 @@ function fillMedicationsGrid(medications, element) {
         if (v[x] < weeklyAmount) {
           div.appendChild(createElement('p', { innerHTML: `${v[x]}`, style: `color: red;` }))
         } else {
-          div.appendChild(document.createTextNode(`${v[x]}`))
+          div.appendChild(createElement('p', { innerHTML: `${v[x]}`, title: `${v[x]}`,  style: `text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 20ch;` }))
         }
       } else {
-       div.appendChild(document.createTextNode(`${v[x]}`))
+        div.appendChild(createElement('p', { innerHTML: `${v[x]}`, title: `${v[x]}`,  style: `text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 20ch;` }))
       }
       if ((app.getMedicationCount() % 2) === 0) {
         setAttributes(div, { style: `background-color: #F2F7FB;` })
@@ -213,8 +228,8 @@ function fillMedicationsGrid(medications, element) {
       element.appendChild(div)
     })
     const div = createElement('div', { className: `medication-grid-item actions` })
-    const removeButton = createElement('i', { className: "fas fa-trash-alt", style: `color: grey;` })
-    const editButton = createElement('i', { className: "fas fa-wrench", style: `color: grey;` })
+    const removeButton = createElement('i', { className: "fas fa-trash-alt", style: `color: grey; cursor: pointer;` })
+    const editButton = createElement('i', { className: "fas fa-wrench", style: `color: grey; cursor: pointer;` })
     appendMultipleChild(div, [removeButton, editButton])
     if ((app.getMedicationCount() % 2) === 0) {
       setAttributes(div, { style: `background-color: #F2F7FB;` })
@@ -240,11 +255,13 @@ function fillMedicationsGrid(medications, element) {
       document.querySelector('#substance').value = v.substance
       document.querySelector('#amount').value = v.amount
       document.querySelector('#info').value = v.usage_info
-      document.querySelector('#exp-date').value = v.exp_date
+      document.querySelector('#exp-date').value = new Date(v.exp_date).toDateInputValue() 
       document.querySelector('#dosage').value = v.dosage
       document.querySelector('#do-not-use').value = v.do_not_use
 
       app.elements.updateMedication.addEventListener("click", () => {
+        event.preventDefault()
+
         const formData = {
           "id": v.id,
           "name": document.querySelector('#name').value,
@@ -261,9 +278,7 @@ function fillMedicationsGrid(medications, element) {
             if (result.error) {
               throw Error(result.error)
             } else {
-              removeElements(document.querySelectorAll('.medication-grid-item'))
-              let medications = await getMedications()
-              fillMedicationsGrid(medications, app.elements.medicationGrid)
+              reloadMedicationsGrid()
               setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
               setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
             }
@@ -283,16 +298,17 @@ function fillMedicationsGrid(medications, element) {
  * Filters medications grid when giving input in the medication finder. 
  * @returns {undefined}
  */
-app.elements.medicationFinder.addEventListener("keydown", async () => {
+app.elements.medicationFinder.addEventListener("keyup", async () => {
   let filterValue = app.elements.medicationFinder.value
-  let medications = await getMedications()
-  if (filterValue.length >= 2 && filterValue != " ") {
+  if (filterValue.length >= 3 && filterValue != " ") {
+    let medications = await getMedications()
     medications = medications.filter(x => x.name.toLowerCase().includes(filterValue.toLowerCase()))
     removeElements(document.querySelectorAll('.medication-grid-item'))
     fillMedicationsGrid(medications, app.elements.medicationGrid)
   } else {
-    removeElements(document.querySelectorAll('.medication-grid-item'))
-    fillMedicationsGrid(medications, app.elements.medicationGrid)
+    if (filterValue === "" || filterValue.length >= 2) {
+      reloadMedicationsGrid()
+    }
   }
 })
 
@@ -311,6 +327,8 @@ app.elements.addMedication.addEventListener("click", () => {
 })
 
 app.elements.postMedication.addEventListener("click", () => {
+  event.preventDefault()
+
   const formData = {
     "name": document.querySelector('#name').value,
     "substance": document.querySelector('#substance').value,
@@ -321,22 +339,29 @@ app.elements.postMedication.addEventListener("click", () => {
     "doNotUse": document.querySelector('#do-not-use').value
   }
 
-  postJSONData(`/api/add-medication`, formData).then(async (result) => {
-    try {
-      if (result.error) {
-        throw Error(result.error)
-      } else {
-        removeElements(document.querySelectorAll('.medication-grid-item'))
-        let medications = await getMedications()
-        fillMedicationsGrid(medications, app.elements.medicationGrid)
-        setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
-        setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
-      }
-    } catch (e) {
-      console.error(e.message)
-      alert(e.message)
+  try {
+    if (RegExp('[^0-9]', 'g').test(formData.amount)) {
+      throw Error('Amout value is must be number!')
+    } else if (!RegExp('[0-9]+x[0-9]+', 'g').test(formData.dosage)) {
+      throw Error("The dosage value must be in '1x1' format.")
+    } else if (!Object.keys(formData).map(v => formData[v].length > 0).every(x => x)) {
+      throw Error('All field must be filled!')
+    } else {
+      postJSONData(`/api/add-medication`, formData).then(async (result) => {
+          if (result.error) {
+            throw Error(result.error)
+          } else {
+            reloadMedicationsGrid()
+            setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
+            setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
+          }
+      })
     }
-  })
+  } catch (e) {
+    console.error(e.message)
+    alert(e.message)
+  }
+
 })
 
 init()

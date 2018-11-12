@@ -6,35 +6,35 @@
 
 #header {
   height: 40px;
-  background-color: #028CD0;
+  background-color: #F2F2F2;
   display: inline-flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 999;
+  box-shadow: 0px 0px 6px rgba(0,0,0,.2);
 }
 
 .navigation-button {
   background: none;
   border: none;
-  color: white;
+  color: #707070;
   font-size: 2em;
   margin: 5px;
 }
 
+.navigation-button:focus {
+  outline:0;
+}
+
 #add-medication {
   margin-right: 10px;
+  cursor: pointer;
 }
 
-#finder {
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-#medication-finder-label {
-  color: white;
-  font-size: 1.7em;
-  margin: 5px 10px 5px 5px;
+#medication-finder {
+  margin-left: 10px;
 }
 
 .form-field {
@@ -51,14 +51,14 @@ textarea {
 }
 
 #title {
-  color: white;
+  color: #707070;
 }
 
 #add-medication-form {
   width: 500px;
   height: calc(100vh - 80px);
   background: white;
-  z-index: 999;
+  z-index: 888;
   position: absolute;
   right: 0;
   box-shadow: 0px 0px 10px rgba(0,0,0,.1);
@@ -67,8 +67,29 @@ textarea {
   padding-top: 20px;
 }
 
+#post-medication, #update-medication {
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-inner-spin-button {
+    display: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    color: #2c3e50;
+}
+
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: "Helvetica", arial, sans-serif;
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
 #add-medication-form .form-field {
   margin: 15px;
+  padding: 4px;
 }
 
 #add-medication-form label {
@@ -78,17 +99,21 @@ textarea {
 #content {
   height: calc(100vh - 60px);
   width: 100%;
-  overflow: overlay;
+  /*overflow: overlay;*/
+  overflow: hidden;
 }
 
 #footer {
   height: 20px;
-  background-color: #028CD0;
-  color: white;
+  background-color: #F2F2F2;
+  color: #707070;
   width: 100%;
+  position: relative;
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0px 0px 6px rgba(0,0,0,.2);
 }
 
 #footer-content {
@@ -99,7 +124,6 @@ textarea {
   display: grid;
   text-align: center;
   grid-template-columns: repeat(8, 1fr);
-  margin: 5px 0px 5px 0px;
 }
 
 #medication-grid-header {
