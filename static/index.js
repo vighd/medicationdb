@@ -143,7 +143,7 @@ function removeMedication(id) {
  * @param date2
  * @returns int
  */
-const daysBetween = (x, y) => Math.round(Math.abs(x.getTime() - y.getTime()) / 1000 * 60 * 60 * 24)
+const daysBetween = (x, y) => Math.round(Math.abs(x.getTime() - y.getTime()) / (1000 * 60 * 60 * 24))
 
   /**
    * setAttributes

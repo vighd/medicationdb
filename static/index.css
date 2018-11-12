@@ -99,8 +99,8 @@ input[type="date"] {
 #content {
   height: calc(100vh - 60px);
   width: 100%;
-  /*overflow: overlay;*/
-  overflow: hidden;
+  overflow: overlay;
+  /*overflow: hidden;*/
 }
 
 #footer {
