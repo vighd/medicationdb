@@ -1,6 +1,10 @@
+/**
+ * Global app object, this object holds data from the application
+ * like the displayed medication count, setters, getters and the
+ * application elements from the dom.
+ */
 const app = {
   medicationCount: 0,
-  timer: null,
   elements: {
     medicationGrid: document.querySelector('#medication-grid'),
     medicationFinder: document.querySelector('#medication-finder'),
@@ -10,12 +14,8 @@ const app = {
     updateMedication: document.querySelector('#update-medication')
   },
   getMedicationCount: () => this.medicationCount || 0,
-  setMedicationCount: (count) => {
+    setMedicationCount: (count) => {
     this.medicationCount = count
-  },
-  getTimer: () => this.timer || 0,
-  setTimer: (timer) => {
-    this.timer = timer
   }
 }
 
@@ -30,6 +30,8 @@ class ApiError extends Error {
     this.status = status
   }
 }
+
+/* ---------------------- HANDLER FUNCTIONS ---------------------- */
 
 /**
  * postJSONData
@@ -55,7 +57,7 @@ function postJSONData(url = ``, data = {}) {
 
 /**
  * getData
- * Get data from the given api endpoint.
+ * Get data in JSON from the given api endpoint.
  * @param url=``
  * @returns {undefined}
  */
@@ -77,14 +79,13 @@ async function getData(url = ``) {
 
 /**
  * init
- * Initializes the page with data
+ * Initializes the page with data like fill the medications grid.
  * @returns {undefined}
  */
 async function init() {
   try {
-    const medications = await getMedications()
-
     // Fill medications grid
+    const medications = await getMedications()
     fillMedicationsGrid(medications, app.elements.medicationGrid) 
   } catch (e) {
     console.error(e)
@@ -94,19 +95,28 @@ async function init() {
 
 /**
  * getMedications
- * Get medications object from the database then returns a JSON array with objects.
+ * Get medications from the database then returns a JSON array with objects.
  * @returns {Object}
  */
-function getMedications() {
-  return getData(`/api/medications`)
-}
+const getMedications = () => getData(`/api/medications`)
 
+/**
+ * reloadMedicationsGrid
+ * Clears the medications grid, then fills with the updated data.
+ * @returns {undefined}
+ */
 async function reloadMedicationsGrid() {
   removeElements(document.querySelectorAll('.medication-grid-item'))
   let medications = await getMedications()
   fillMedicationsGrid(medications, app.elements.medicationGrid)
 }
 
+/**
+ * removeMedication
+ * Removes a medication from the database.
+ * @param id UUID (Medication id)
+ * @returns {undefined}
+ */
 function removeMedication(id) {
   const data = {
     "id": id
@@ -126,39 +136,33 @@ function removeMedication(id) {
   })
 }
 
-/* ---------------------- HANDLER FUNCTIONS ---------------------- */
-
-function daysBetween(date1, date2) {
-  // The number of milliseconds in one day
-  const oneDay = 1000 * 60 * 60 * 24
-  // Convert both dates to milliseconds
-  const date1Ms = date1.getTime()
-  const date2Ms = date2.getTime()
-  // Calculate the difference in milliseconds
-  const differenceMs = Math.abs(date1Ms - date2Ms)
-  // Convert back to days and return
-  return Math.round(differenceMs/oneDay)
-}
-
 /**
- * setAttributes
- * Helper function for setting multiple attributes on element.
- * @param el - DOM Element
- * @param attrs - OBJECT with element attributes.
- * @returns {undefined}
+ * daysBetween
+ * Calculates the days between two date then returns it.
+ * @param date1
+ * @param date2
+ * @returns int
  */
-function setAttributes(el, attrs) {
-  Object.keys(attrs).forEach(key => el[key] = attrs[key])
-}
+const daysBetween = (x, y) => Math.round(Math.abs(x.getTime() - y.getTime()) / 1000 * 60 * 60 * 24)
 
-/**
- * createElement
- * Creates a new element and set the given attributes.
- * @param el - DOM Element
- * @param attrs - OBJECT with element attributes.
- * @returns {undefined}
- */
-function createElement(el, attrs) {
+  /**
+   * setAttributes
+   * Helper function for setting multiple attributes on element.
+   * @param el - DOM Element
+   * @param attrs - OBJECT with element attributes.
+   * @returns Object
+   */
+const setAttributes = (el, attrs) => Object.keys(attrs).forEach(key => el[key] = attrs[key])
+
+
+  /**
+   * createElement
+   * Creates a new element and set the given attributes.
+   * @param el - DOM Element
+   * @param attrs - OBJECT with element attributes.
+   * @returns {undefined}
+   */
+const createElement = (el, attrs) => {
   el = document.createElement(el)
   Object.keys(attrs).forEach(key => el[key] = attrs[key])
   return el
@@ -171,14 +175,16 @@ function createElement(el, attrs) {
  * @param childs - ARRAY with DOM Elements
  * @returns {undefined}
  */
-function appendMultipleChild(el, childs) {
-  childs.forEach(e => el.appendChild(e))
-}
+const appendMultipleChild = (el, childs) => childs.forEach(e => el.appendChild(e))
 
-Date.prototype.toDateInputValue = (function() {
-    var local = new Date(this)
-    local.setMinutes(this.getMinutes() - this.getTimezoneOffset())
-    return local.toJSON().slice(0,10)
+  /**
+   * Extend Date with toDateInputValue function
+   * to convert date to input format.
+   */
+Date.prototype.toDateInputValue = (function () {
+  var local = new Date(this)
+  local.setMinutes(this.getMinutes() - this.getTimezoneOffset())
+  return local.toJSON().slice(0,10)
 })
 
 /**
@@ -187,30 +193,63 @@ Date.prototype.toDateInputValue = (function() {
  * @param elms ARRAY - DOM elements by class name
  * @returns {undefined}
  */
-function removeElements(elms) { return [...elms].forEach(el => el.remove()) }
+const removeElements = (elms) => [...elms].forEach(el => el.remove())
 
+  /**
+   * validateFormData
+   * Validates form data then throws an error if the value is not as expected.
+   * It returns true if everything is ok.
+   * @returns {boolean}
+   */
+const validateFormData = (formData) => {
+  if (RegExp('[^0-9]', 'g').test(formData.amount)) {
+    throw Error('Amout value is must be number!')
+  } else  if (!RegExp('[0-9]+x[0-9]+', 'g').test(formData.dosage)) {
+    throw Error("The dosage value must be in '1x1' format.")
+  } else  if (!Object.keys(formData).map(v => formData[v].length > 0).every(x => x)) {
+    throw Error('All field must be filled!')
+  } else {
+    return true
+  }
+}
+
+/**
+ * fillMedicationsGrid
+ * Fills the medication grid dom element with whild elements and
+ * add functionality for grid, like event listeners on remove or the
+ * edit button, calculates remaining dosage or expiration date.
+ * @param medications ARRAY - An array with medications object
+ * @param element Object - Dom element to fill
+ * @returns {undefined}
+ */
 function fillMedicationsGrid(medications, element) {
   app.setMedicationCount(0)
+
+  // Return if no medications
   if (Object.keys(medications).length === 0) {
     return
   }
 
+  // Map medications and fills 
   medications.forEach(v => {
     app.setMedicationCount(app.getMedicationCount()+1)
     Object.keys(v).filter(x => x != "id").forEach(x => {
       const div = createElement('div', { className: `medication-grid-item` })
+      // Create link if usage_info or do_not_use then add event listener to expand.
       if (x === "usage_info" || x === "do_not_use") {
         const usageInfo = createElement('a', { href: `#`, innerHTML: "Expand" })
         div.appendChild(usageInfo)
         usageInfo.addEventListener("click", () => {
           alert(v[x])
         })
+        // If expiration date is near, change color to red.
       } else if ( x === "exp_date") {
         if (daysBetween(new Date(), new Date(v[x])) < 14) {
           div.appendChild(createElement('p', { innerHTML: `${v[x]}`, style: `color: red;` }))
         } else {
           div.appendChild(createElement('p', { innerHTML: `${v[x]}`, title: `${v[x]}`,  style: `text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 20ch;` }))
         }
+        // If medication amount is less than one week, change color to red.
       } else if ( x === "amount") {
         const dailyAmount = Number(v.dosage.split('x')[0])*Number(v.dosage.split('x')[1])
         const weeklyAmount = 7*dailyAmount
@@ -240,6 +279,11 @@ function fillMedicationsGrid(medications, element) {
         removeMedication(v.id)
       }
     })
+
+    /**
+     * Handle, and validate update medication form.
+     * @returns {undefined}
+     */
     editButton.addEventListener("click", () => {
       const element = app.elements.addMedicationForm
       if (element.style.display === "none" || element.style.display === "") {
@@ -249,7 +293,7 @@ function fillMedicationsGrid(medications, element) {
         setAttributes(app.elements.updateMedication, { style: `display: block;` })
         element.reset()
       } 
-      
+
       // Write medication data to input fields
       document.querySelector('#name').value = v.name
       document.querySelector('#substance').value = v.substance
@@ -273,20 +317,22 @@ function fillMedicationsGrid(medications, element) {
           "doNotUse": document.querySelector('#do-not-use').value
         }
 
-        postJSONData(`/api/update-medication`, formData).then(async (result) => {
-          try {
-            if (result.error) {
-              throw Error(result.error)
-            } else {
-              reloadMedicationsGrid()
-              setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
-              setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
-            }
-          } catch (e) {
-            console.error(e.message)
-            alert(e.message)
+        try {
+          if (validateFormData(formData)) {
+            postJSONData(`/api/update-medication`, formData).then(async (result) => {
+              if (result.error) {
+                throw Error(result.error)
+              } else {
+                reloadMedicationsGrid()
+                setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
+                setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
+              }
+            })
           }
-        })
+        } catch (e) {
+          console.error(e.message)
+          alert(e.message)
+        }
       })
     })
   })
@@ -295,7 +341,7 @@ function fillMedicationsGrid(medications, element) {
 /* ---------------------- EVENT HANDLERS ---------------------- */
 
 /**
- * Filters medications grid when giving input in the medication finder. 
+ * Filters medications grid when giving input from the medication finder. 
  * @returns {undefined}
  */
 app.elements.medicationFinder.addEventListener("keyup", async () => {
@@ -312,6 +358,10 @@ app.elements.medicationFinder.addEventListener("keyup", async () => {
   }
 })
 
+/**
+ * Show and hide add new medication form pane.
+ * @returns {undefined}
+ */
 app.elements.addMedication.addEventListener("click", () => {
   const element = app.elements.addMedicationForm
   if (element.style.display === "none" || element.style.display === "") {
@@ -326,6 +376,10 @@ app.elements.addMedication.addEventListener("click", () => {
   }
 })
 
+/**
+ * Handle, and validate add new medication form.
+ * @returns {undefined}
+ */
 app.elements.postMedication.addEventListener("click", () => {
   event.preventDefault()
 
@@ -340,21 +394,15 @@ app.elements.postMedication.addEventListener("click", () => {
   }
 
   try {
-    if (RegExp('[^0-9]', 'g').test(formData.amount)) {
-      throw Error('Amout value is must be number!')
-    } else if (!RegExp('[0-9]+x[0-9]+', 'g').test(formData.dosage)) {
-      throw Error("The dosage value must be in '1x1' format.")
-    } else if (!Object.keys(formData).map(v => formData[v].length > 0).every(x => x)) {
-      throw Error('All field must be filled!')
-    } else {
+    if (validateFormData(formData)) {
       postJSONData(`/api/add-medication`, formData).then(async (result) => {
-          if (result.error) {
-            throw Error(result.error)
-          } else {
-            reloadMedicationsGrid()
-            setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
-            setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
-          }
+        if (result.error) {
+          throw Error(result.error)
+        } else {
+          reloadMedicationsGrid()
+          setAttributes(app.elements.addMedicationForm, { style: `display: none;` })
+          setAttributes(app.elements.addMedication, { style: `transform: none !important;` })
+        }
       })
     }
   } catch (e) {

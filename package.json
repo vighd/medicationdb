@@ -4,7 +4,7 @@
   "description": "A simple medication management database with HAPI and ES6.",
   "main": "src/index.js",
   "scripts": {
-    "start": "pm2-dev start server.json"
+    "start": "pm2-dev start development-server.json"
   },
   "repository": "git@bitbucket.org:vighd/medicationdb.git",
   "author": "Daniel Vigh <vighd@digital.co.hu>",

@@ -1,9 +1,9 @@
 {
   "apps" : [
     {
-      "name":   "medicationdb-server",
+      "name":   "medicationdb-server-dev",
       "script": "src/index.js",
-      "instances": "2",
+      "instances": "1",
       "out_file": "~/.pm2/logs/meddb-server.log",
       "error_file": "~/.pm2/logs/meddb-server.log",
       "merge_logs"      : true,
