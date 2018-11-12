@@ -2,9 +2,15 @@
   "name": "medicationdb",
   "version": "1.0.0",
   "description": "A simple medication management database with HAPI and ES6.",
-  "main": "src/index.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "pm2-dev start development-server.json"
+    "start": "pm2-dev start development-server.json",
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "start-desktop-app": "electron src/app.js",
+    "build-linux": "cd node_modules/sqlite3 && yarn add nan && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-v57-linux-x64/ && node-gyp rebuild --target=0.36.0 --arch=x64 --target_platform=linux --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v57-linux-x64",
+    "build-windows": "cd node_modules/sqlite3 && yarn add nan && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-v57-win32-x64 && node-gyp rebuild --target=0.36.0 --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/node-v57-win32-x64",
+    "package-windows": "electron-packager . medicationdb --overwrite --asar --platform=win32 --arch=x64 --icon=static/favicon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='medicationdb'",
+    "package-linux": "electron-packager . medicationdb --overwrite --asar --platform=linux --arch=x64 --icon=static/favicon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName='medicationdb'"
   },
   "repository": "git@bitbucket.org:vighd/medicationdb.git",
   "author": "Daniel Vigh <vighd@digital.co.hu>",
@@ -15,5 +21,10 @@
     "sql-template-strings": "^2.2.2",
     "sqlite": "^3.0.0",
     "uuidv4": "^2.0.0"
+  },
+  "devDependencies": {
+    "electron": "^3.0.8",
+    "electron-packager": "^12.2.0",
+    "electron-rebuild": "^1.8.2"
   }
 }
