@@ -1,6 +1,15 @@
 # Medication database
 
-A simple medication management database with restapi(NodeJs, Hapi) and ES6.
+A simple medication management database.
+
+#### Used technologies:
+
+* NodeJS
+* ES6
+* HTML5, CSS3
+* SQLite3
+
+This application is a node project. The static files served by the same API wich handle the requests. The database is an SQLite3 database with one simple table. All of the database modifications or test date handled with migrations. See example in migrations/002-test-data.sql.
 
 # Dependencies
 
@@ -10,18 +19,18 @@ A simple medication management database with restapi(NodeJs, Hapi) and ES6.
 
 # Usage
 
-Development mode:
+###Development mode:
 
 ```bash
 yarn install
 yarn start
 ```
 
-Production mode:
+###Production mode:
 
 ```bash
 yarn install
 pm2 start server.json
 ```
 
-The application is running on http://localhost:8080.
+If the application started, you can access on http://localhost:8080.
