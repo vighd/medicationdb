@@ -19,14 +19,14 @@ This application is a node project. The static files served by the same API wich
 
 # Usage
 
-###Development mode:
+### Development mode:
 
 ```bash
 yarn install
 yarn start
 ```
 
-###Production mode:
+### Production mode:
 
 ```bash
 yarn install
